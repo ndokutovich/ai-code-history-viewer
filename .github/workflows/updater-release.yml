@@ -23,6 +23,9 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       release_id: ${{ steps.create-release.outputs.result }}
+      # On a manual run `github.ref_name` is the branch, so the tag is carried
+      # explicitly to every job that needs it.
+      tag: ${{ steps.version.outputs.tag }}
 
     steps:
       - uses: actions/checkout@v4
@@ -36,12 +39,15 @@ jobs:
           version: 10
 
       - name: resolve version
+        id: version
         run: |
           if [ -n "${{ github.event.inputs.version }}" ]; then
-            echo "PACKAGE_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
+            VERSION="${{ github.event.inputs.version }}"
           else
-            echo "PACKAGE_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+            VERSION="${GITHUB_REF_NAME#v}"
           fi
+          echo "PACKAGE_VERSION=$VERSION" >> "$GITHUB_ENV"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: create or get release
         id: create-release
@@ -267,7 +273,7 @@ jobs:
 
       - name: Upload latest.json to release
         run: |
-          gh release upload ${{ github.ref_name }} latest.json --clobber
+          gh release upload ${{ needs.create-release.outputs.tag }} latest.json --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
