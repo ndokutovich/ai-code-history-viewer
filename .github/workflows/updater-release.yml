@@ -5,6 +5,15 @@ on:
   push:
     tags:
       - "v*"
+  # Tag pushes stopped creating runs after the 2026-11-09 repository rename
+  # (the tag ref arrived, no workflow run did). This path releases an existing
+  # tag by hand.
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release, without the leading v (e.g. 1.10.12)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -26,8 +35,13 @@ jobs:
         with:
           version: 10
 
-      - name: get version from tag
-        run: echo "PACKAGE_VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_ENV
+      - name: resolve version
+        run: |
+          if [ -n "${{ github.event.inputs.version }}" ]; then
+            echo "PACKAGE_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
+          else
+            echo "PACKAGE_VERSION=${GITHUB_REF_NAME#v}" >> "$GITHUB_ENV"
+          fi
 
       - name: create or get release
         id: create-release
@@ -54,7 +68,7 @@ jobs:
                   owner: context.repo.owner,
                   repo: context.repo.repo,
                   tag_name: tagName,
-                  name: `Claude Code History Viewer v${process.env.PACKAGE_VERSION}`,
+                  name: `AI Code History Viewer v${process.env.PACKAGE_VERSION}`,
                   body: '🎉 A new version has been released! Check the detailed changes below.',
                   generate_release_notes: true,
                   draft: true,
