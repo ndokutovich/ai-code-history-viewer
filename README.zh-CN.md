@@ -2,14 +2,14 @@
 
 一款用于浏览 Claude Code、Cursor IDE、Codex CLI 和 Gemini AI Studio 对话历史（存储在 `~/.claude`、Cursor 数据文件夹、`~/.codex` 和 Gemini 工作区）的跨平台桌面应用程序。
 
-![Version](https://img.shields.io/github/v/release/ndokutovich/claude-code-history-viewer?label=Version&color=blue)
-![Downloads](https://img.shields.io/github/downloads/ndokutovich/claude-code-history-viewer/total?label=Downloads&color=brightgreen)
+![Version](https://img.shields.io/github/v/release/ndokutovich/ai-code-history-viewer?label=Version&color=blue)
+![Downloads](https://img.shields.io/github/downloads/ndokutovich/ai-code-history-viewer/total?label=Downloads&color=brightgreen)
 ![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 **Languages**: [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [中文 (简体)](README.zh-CN.md) | [中文 (繁體)](README.zh-TW.md) | [Русский](README.ru.md)
 
-> ⚠️ **测试版软件** - 可能存在不稳定或变更。如发现问题请在 [GitHub](https://github.com/ndokutovich/claude-code-history-viewer/issues) 上报告。
+> ⚠️ **测试版软件** - 可能存在不稳定或变更。如发现问题请在 [GitHub](https://github.com/ndokutovich/ai-code-history-viewer/issues) 上报告。
 
 ## 开发原因
 
@@ -187,7 +187,7 @@ Claude Code、Cursor IDE、Codex CLI 和 Gemini AI Studio 等 AI 编码助手将
 
 ### 下载预构建二进制文件
 
-从 [Releases](https://github.com/ndokutovich/claude-code-history-viewer/releases) 获取最新版本。
+从 [Releases](https://github.com/ndokutovich/ai-code-history-viewer/releases) 获取最新版本。
 
 **macOS**:
 - 下载 `.dmg` 文件
@@ -209,7 +209,7 @@ Claude Code、Cursor IDE、Codex CLI 和 Gemini AI Studio 等 AI 编码助手将
 
 **所有平台**:
 ```bash
-git clone https://github.com/ndokutovich/claude-code-history-viewer.git
+git clone https://github.com/ndokutovich/ai-code-history-viewer.git
 cd claude-code-history-viewer
 pnpm install  # 或 npm install、yarn、bun
 pnpm tauri:build  # 为当前平台构建
@@ -343,14 +343,14 @@ pnpm tauri:build:linux    # Linux x86_64
 - **Linux**: 如果看到 webkit 相关错误，请安装 WebKitGTK: `sudo apt install libwebkit2gtk-4.1-dev`
 - **macOS**: 如果收到安全警告，请右键单击应用程序并选择"打开"
 
-**更新问题**: 如果自动更新失败，请从 [Releases](https://github.com/ndokutovich/claude-code-history-viewer/releases) 手动下载最新版本。
+**更新问题**: 如果自动更新失败，请从 [Releases](https://github.com/ndokutovich/ai-code-history-viewer/releases) 手动下载最新版本。
 
 ## 贡献
 
 欢迎贡献！以下是您可以提供帮助的方式:
 
 **错误报告**:
-- 在 [GitHub](https://github.com/ndokutovich/claude-code-history-viewer/issues) 上开启 issue
+- 在 [GitHub](https://github.com/ndokutovich/ai-code-history-viewer/issues) 上开启 issue
 - 包括您的操作系统、应用程序版本和重现步骤
 - 截图或错误消息很有帮助
 
@@ -368,7 +368,7 @@ pnpm tauri:build:linux    # Linux x86_64
 
 **开发设置**:
 ```bash
-git clone https://github.com/ndokutovich/claude-code-history-viewer.git
+git clone https://github.com/ndokutovich/ai-code-history-viewer.git
 cd claude-code-history-viewer
 pnpm install
 pnpm tauri:dev  # 启动带热重载的开发服务器
@@ -418,4 +418,4 @@ MIT 许可证 - 请参见 [LICENSE](LICENSE) 文件。
 
 ---
 
-**有问题或疑问？** 请使用您的设置详细信息和出错内容[开启 issue](https://github.com/ndokutovich/claude-code-history-viewer/issues)。
+**有问题或疑问？** 请使用您的设置详细信息和出错内容[开启 issue](https://github.com/ndokutovich/ai-code-history-viewer/issues)。

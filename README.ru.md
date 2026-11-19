@@ -2,14 +2,14 @@
 
 Кроссплатформенное настольное приложение для просмотра истории диалогов Claude Code, Cursor IDE, Codex CLI и Gemini AI Studio, хранящейся в `~/.claude`, папках данных Cursor, `~/.codex` и рабочих областях Gemini.
 
-![Version](https://img.shields.io/github/v/release/ndokutovich/claude-code-history-viewer?label=Version&color=blue)
-![Downloads](https://img.shields.io/github/downloads/ndokutovich/claude-code-history-viewer/total?label=Downloads&color=brightgreen)
+![Version](https://img.shields.io/github/v/release/ndokutovich/ai-code-history-viewer?label=Version&color=blue)
+![Downloads](https://img.shields.io/github/downloads/ndokutovich/ai-code-history-viewer/total?label=Downloads&color=brightgreen)
 ![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 **Languages**: [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [中文 (简体)](README.zh-CN.md) | [中文 (繁體)](README.zh-TW.md) | [Русский](README.ru.md)
 
-> ⚠️ **Бета-версия** - возможны нестабильная работа или изменения. Пожалуйста, сообщайте об обнаруженных проблемах на [GitHub](https://github.com/ndokutovich/claude-code-history-viewer/issues).
+> ⚠️ **Бета-версия** - возможны нестабильная работа или изменения. Пожалуйста, сообщайте об обнаруженных проблемах на [GitHub](https://github.com/ndokutovich/ai-code-history-viewer/issues).
 
 ## Зачем это нужно
 
@@ -187,7 +187,7 @@ AI-ассистенты программирования, такие как Clau
 
 ### Скачать предсобранные бинарники
 
-Получите последнюю версию из [Releases](https://github.com/ndokutovich/claude-code-history-viewer/releases).
+Получите последнюю версию из [Releases](https://github.com/ndokutovich/ai-code-history-viewer/releases).
 
 **macOS**:
 - Скачайте файл `.dmg`
@@ -209,7 +209,7 @@ AI-ассистенты программирования, такие как Clau
 
 **Все платформы**:
 ```bash
-git clone https://github.com/ndokutovich/claude-code-history-viewer.git
+git clone https://github.com/ndokutovich/ai-code-history-viewer.git
 cd claude-code-history-viewer
 pnpm install  # или npm install, yarn, bun
 pnpm tauri:build  # сборка для текущей платформы
@@ -343,14 +343,14 @@ pnpm tauri:build:linux    # Linux x86_64
 - **Linux**: Если видите ошибки webkit, установите WebKitGTK: `sudo apt install libwebkit2gtk-4.1-dev`
 - **macOS**: Если получаете предупреждение безопасности, кликните правой кнопкой на приложение и выберите "Открыть"
 
-**Проблемы с обновлением**: Если автообновление не работает, скачайте последнюю версию вручную из [Releases](https://github.com/ndokutovich/claude-code-history-viewer/releases).
+**Проблемы с обновлением**: Если автообновление не работает, скачайте последнюю версию вручную из [Releases](https://github.com/ndokutovich/ai-code-history-viewer/releases).
 
 ## Вклад в проект
 
 Приветствуются любые вклады! Вот как вы можете помочь:
 
 **Сообщения об ошибках**:
-- Откройте issue на [GitHub](https://github.com/ndokutovich/claude-code-history-viewer/issues)
+- Откройте issue на [GitHub](https://github.com/ndokutovich/ai-code-history-viewer/issues)
 - Укажите вашу ОС, версию приложения и шаги для воспроизведения
 - Скриншоты или сообщения об ошибках будут полезны
 
@@ -368,7 +368,7 @@ pnpm tauri:build:linux    # Linux x86_64
 
 **Настройка разработки**:
 ```bash
-git clone https://github.com/ndokutovich/claude-code-history-viewer.git
+git clone https://github.com/ndokutovich/ai-code-history-viewer.git
 cd claude-code-history-viewer
 pnpm install
 pnpm tauri:dev  # запуск dev-сервера с горячей перезагрузкой
@@ -418,4 +418,4 @@ pnpm tauri:dev  # запуск dev-сервера с горячей переза
 
 ---
 
-**Есть вопросы или проблемы?** [Создайте issue](https://github.com/ndokutovich/claude-code-history-viewer/issues) с подробным описанием вашей настройки и что пошло не так.
+**Есть вопросы или проблемы?** [Создайте issue](https://github.com/ndokutovich/ai-code-history-viewer/issues) с подробным описанием вашей настройки и что пошло не так.

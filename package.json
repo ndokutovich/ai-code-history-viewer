@@ -7,12 +7,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/ndokutovich/claude-code-history-viewer.git"
+    "url": "https://github.com/ndokutovich/ai-code-history-viewer.git"
   },
   "bugs": {
-    "url": "https://github.com/ndokutovich/claude-code-history-viewer/issues"
+    "url": "https://github.com/ndokutovich/ai-code-history-viewer/issues"
   },
-  "homepage": "https://github.com/ndokutovich/claude-code-history-viewer#readme",
+  "homepage": "https://github.com/ndokutovich/ai-code-history-viewer#readme",
   "type": "module",
   "scripts": {
     "dev": "vite",

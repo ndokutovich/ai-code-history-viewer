@@ -2,14 +2,14 @@
 
 Claude Code、Cursor IDE、Codex CLI、Gemini AI Studio の会話履歴を閲覧するためのクロスプラットフォームデスクトップアプリです。
 
-![Version](https://img.shields.io/github/v/release/ndokutovich/claude-code-history-viewer?label=Version&color=blue)
-![Downloads](https://img.shields.io/github/downloads/ndokutovich/claude-code-history-viewer/total?label=Downloads&color=brightgreen)
+![Version](https://img.shields.io/github/v/release/ndokutovich/ai-code-history-viewer?label=Version&color=blue)
+![Downloads](https://img.shields.io/github/downloads/ndokutovich/ai-code-history-viewer/total?label=Downloads&color=brightgreen)
 ![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 **Languages**: [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [中文 (简体)](README.zh-CN.md) | [中文 (繁體)](README.zh-TW.md) | [Русский](README.ru.md)
 
-> ⚠️ **ベータソフトウェア** - 不安定または変更の可能性があります。問題を見つけた場合は[GitHub](https://github.com/ndokutovich/claude-code-history-viewer/issues)で報告してください。
+> ⚠️ **ベータソフトウェア** - 不安定または変更の可能性があります。問題を見つけた場合は[GitHub](https://github.com/ndokutovich/ai-code-history-viewer/issues)で報告してください。
 
 ## 開発理由
 
@@ -191,7 +191,7 @@ Claude Code、Cursor IDE、Codex CLI、Gemini AI Studio は会話履歴を様々
 
 ### ビルド済みバイナリのダウンロード
 
-[Releases](https://github.com/ndokutovich/claude-code-history-viewer/releases)から最新版を入手してください。
+[Releases](https://github.com/ndokutovich/ai-code-history-viewer/releases)から最新版を入手してください。
 
 **macOS**:
 - `.dmg` ファイルをダウンロード
@@ -213,7 +213,7 @@ Claude Code、Cursor IDE、Codex CLI、Gemini AI Studio は会話履歴を様々
 
 **すべてのプラットフォーム**:
 ```bash
-git clone https://github.com/ndokutovich/claude-code-history-viewer.git
+git clone https://github.com/ndokutovich/ai-code-history-viewer.git
 cd claude-code-history-viewer
 pnpm install  # または npm install、yarn、bun
 pnpm tauri:build  # 現在のプラットフォーム用にビルド
@@ -347,14 +347,14 @@ pnpm tauri:build:linux    # Linux x86_64
 - **Linux**: webkit 関連のエラーが表示される場合、WebKitGTK をインストールしてください: `sudo apt install libwebkit2gtk-4.1-dev`
 - **macOS**: セキュリティ警告が表示される場合、アプリを右クリックして「開く」を選択してください
 
-**更新の問題**: 自動更新が失敗した場合は、[Releases](https://github.com/ndokutovich/claude-code-history-viewer/releases)から最新バージョンを手動でダウンロードしてください。
+**更新の問題**: 自動更新が失敗した場合は、[Releases](https://github.com/ndokutovich/ai-code-history-viewer/releases)から最新バージョンを手動でダウンロードしてください。
 
 ## 貢献
 
 貢献を歓迎します！お手伝いいただける方法:
 
 **バグレポート**:
-- [GitHub](https://github.com/ndokutovich/claude-code-history-viewer/issues)で issue を開く
+- [GitHub](https://github.com/ndokutovich/ai-code-history-viewer/issues)で issue を開く
 - OS、アプリバージョン、再現手順を含める
 - スクリーンショットやエラーメッセージが役立ちます
 
@@ -372,7 +372,7 @@ pnpm tauri:build:linux    # Linux x86_64
 
 **開発セットアップ**:
 ```bash
-git clone https://github.com/ndokutovich/claude-code-history-viewer.git
+git clone https://github.com/ndokutovich/ai-code-history-viewer.git
 cd claude-code-history-viewer
 pnpm install
 pnpm tauri:dev  # ホットリロード付き開発サーバーを起動
@@ -422,4 +422,4 @@ MIT ライセンス - [LICENSE](LICENSE)ファイルを参照。
 
 ---
 
-**質問や問題がありますか？** 設定と発生した問題について詳しく説明して[issue を作成](https://github.com/ndokutovich/claude-code-history-viewer/issues)してください。
+**質問や問題がありますか？** 設定と発生した問題について詳しく説明して[issue を作成](https://github.com/ndokutovich/ai-code-history-viewer/issues)してください。

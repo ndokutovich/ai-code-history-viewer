@@ -54,7 +54,7 @@ Tauri uses a key pair to sign updates and verify their authenticity. You must ge
    "updater": {
      "active": true,
      "endpoints": [
-       "https://github.com/ndokutovich/claude-code-history-viewer/releases/latest/download/latest.json"
+       "https://github.com/ndokutovich/ai-code-history-viewer/releases/latest/download/latest.json"
      ],
      "dialog": false,
      "pubkey": "YOUR_NEW_PUBLIC_KEY_HERE"
@@ -234,7 +234,7 @@ When the workflow completes successfully, you'll have installers for:
 
 Before your first release, verify:
 
-- ✅ Git remote is set to your fork: `git@github.com:ndokutovich/claude-code-history-viewer.git`
+- ✅ Git remote is set to your fork: `git@github.com:ndokutovich/ai-code-history-viewer.git`
 - ✅ `tauri.conf.json` has your repository URL
 - ✅ `tauri.conf.json` has `createUpdaterArtifacts: true`
 - ✅ `tauri.conf.json` has your new **public key**

@@ -148,4 +148,4 @@ Planned for future releases:
 
 ---
 
-**Full Changelog**: [v1.5.0...v1.6.0](https://github.com/ndokutovich/claude-code-history-viewer/compare/v1.5.0...v1.6.0)
+**Full Changelog**: [v1.5.0...v1.6.0](https://github.com/ndokutovich/ai-code-history-viewer/compare/v1.5.0...v1.6.0)

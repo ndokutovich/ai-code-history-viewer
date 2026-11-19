@@ -31,7 +31,7 @@ describe('useGitHubUpdater check timeout', () => {
         name: 'v1.10.7',
         body: '',
         published_at: '',
-        html_url: 'https://github.com/ndokutovich/claude-code-history-viewer/releases/tag/v1.10.7',
+        html_url: 'https://github.com/ndokutovich/ai-code-history-viewer/releases/tag/v1.10.7',
         assets: [],
       }),
     });
@@ -85,7 +85,7 @@ describe('useGitHubUpdater check timeout', () => {
         name: 'v1.10.10',
         body: '',
         published_at: '',
-        html_url: 'https://github.com/ndokutovich/claude-code-history-viewer/releases/tag/v1.10.10',
+        html_url: 'https://github.com/ndokutovich/ai-code-history-viewer/releases/tag/v1.10.10',
         assets: [],
       }),
     });

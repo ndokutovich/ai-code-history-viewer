@@ -69,7 +69,7 @@ export function useGitHubUpdater(): UseGitHubUpdaterReturn {
         const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         const response = await fetch(
-          "https://api.github.com/repos/ndokutovich/claude-code-history-viewer/releases/latest",
+          "https://api.github.com/repos/ndokutovich/ai-code-history-viewer/releases/latest",
           {
             method: "GET",
             headers: {

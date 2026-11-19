@@ -16,7 +16,7 @@ The repository currently has **10 hardcoded references** to the owner/repository
 
 ### Strategy
 
-1. **Keep defaults in code** (original repo: `ndokutovich/claude-code-history-viewer`)
+1. **Keep defaults in code** (original repo: `ndokutovich/ai-code-history-viewer`)
 2. **Substitute at build time** using GitHub Actions environment variables
 3. **Forks only configure GitHub repository variables** (no file modifications)
 4. **Zero merge conflicts** when syncing with upstream
@@ -195,7 +195,7 @@ console.log(`   Updater: ${UPDATER_URL}\n`);
 Replace line 75:
 ```rust
 // OLD:
-let github_url = "https://github.com/ndokutovich/claude-code-history-viewer/issues/new";
+let github_url = "https://github.com/ndokutovich/ai-code-history-viewer/issues/new";
 
 // NEW:
 use crate::constants::repo::{ISSUES_URL, FEEDBACK_EMAIL};
@@ -228,7 +228,7 @@ use crate::constants::repo::API_RELEASES_URL;
 Replace line 97:
 ```rust
 // OLD:
-.get("https://api.github.com/repos/ndokutovich/claude-code-history-viewer/releases/latest")
+.get("https://api.github.com/repos/ndokutovich/ai-code-history-viewer/releases/latest")
 
 // NEW:
 .get(API_RELEASES_URL)
@@ -244,7 +244,7 @@ import { REPO_CONFIG } from '../constants/repo';
 Replace line 67:
 ```typescript
 // OLD:
-"https://api.github.com/repos/ndokutovich/claude-code-history-viewer/releases/latest",
+"https://api.github.com/repos/ndokutovich/ai-code-history-viewer/releases/latest",
 
 // NEW:
 REPO_CONFIG.releasesApiUrl,
@@ -293,10 +293,10 @@ These provide defaults for local development without setup.
 export const REPO_CONFIG = {
   owner: "ndokutovich",
   repo: "claude-code-history-viewer",
-  repoUrl: "https://github.com/ndokutovich/claude-code-history-viewer",
-  apiUrl: "https://api.github.com/repos/ndokutovich/claude-code-history-viewer",
-  issuesUrl: "https://github.com/ndokutovich/claude-code-history-viewer/issues",
-  releasesApiUrl: "https://api.github.com/repos/ndokutovich/claude-code-history-viewer/releases/latest",
+  repoUrl: "https://github.com/ndokutovich/ai-code-history-viewer",
+  apiUrl: "https://api.github.com/repos/ndokutovich/ai-code-history-viewer",
+  issuesUrl: "https://github.com/ndokutovich/ai-code-history-viewer/issues",
+  releasesApiUrl: "https://api.github.com/repos/ndokutovich/ai-code-history-viewer/releases/latest",
   feedbackEmail: "feedback@claude-history-viewer.app",
 } as const;
 ```
@@ -314,9 +314,9 @@ pub mod repo;
 // These values work for the original repo without configuration
 pub const REPO_OWNER: &str = "ndokutovich";
 pub const REPO_NAME: &str = "claude-code-history-viewer";
-pub const REPO_URL: &str = "https://github.com/ndokutovich/claude-code-history-viewer";
-pub const ISSUES_URL: &str = "https://github.com/ndokutovich/claude-code-history-viewer/issues/new";
-pub const API_RELEASES_URL: &str = "https://api.github.com/repos/ndokutovich/claude-code-history-viewer/releases/latest";
+pub const REPO_URL: &str = "https://github.com/ndokutovich/ai-code-history-viewer";
+pub const ISSUES_URL: &str = "https://github.com/ndokutovich/ai-code-history-viewer/issues/new";
+pub const API_RELEASES_URL: &str = "https://api.github.com/repos/ndokutovich/ai-code-history-viewer/releases/latest";
 pub const FEEDBACK_EMAIL: &str = "feedback@claude-history-viewer.app";
 ```
 
@@ -491,7 +491,7 @@ Stay up to date with the original repository:
 
 ```bash
 # Add upstream remote (one time)
-git remote add upstream https://github.com/ndokutovich/claude-code-history-viewer.git
+git remote add upstream https://github.com/ndokutovich/ai-code-history-viewer.git
 
 # Sync with upstream
 git fetch upstream

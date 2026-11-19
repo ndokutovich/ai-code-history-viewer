@@ -1,10 +1,10 @@
 A cross-platform desktop app to browse and search your Claude Code, Cursor IDE, Codex CLI, Gemini AI Studio, and OpenCode conversation history stored in their respective data folders.
 
-![Version](https://img.shields.io/github/v/release/ndokutovich/claude-code-history-viewer?label=Version&color=blue)
-![Downloads](https://img.shields.io/github/downloads/ndokutovich/claude-code-history-viewer/total?label=Downloads&color=brightgreen)
+![Version](https://img.shields.io/github/v/release/ndokutovich/ai-code-history-viewer?label=Version&color=blue)
+![Downloads](https://img.shields.io/github/downloads/ndokutovich/ai-code-history-viewer/total?label=Downloads&color=brightgreen)
 ![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey.svg)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
-[![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/ndokutovich/claude-code-history-viewer?utm_source=oss&utm_medium=github&utm_campaign=ndokutovich%2Fclaude-code-history-viewer&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)](https://coderabbit.ai)
+[![CodeRabbit Pull Request Reviews](https://img.shields.io/coderabbit/prs/github/ndokutovich/ai-code-history-viewer?utm_source=oss&utm_medium=github&utm_campaign=ndokutovich%2Fclaude-code-history-viewer&labelColor=171717&color=FF570A&link=https%3A%2F%2Fcoderabbit.ai&label=CodeRabbit+Reviews)](https://coderabbit.ai)
 
 **Languages**: [English](README.md) | [한국어](README.ko.md) | [日本語](README.ja.md) | [中文 (简体)](README.zh-CN.md) | [中文 (繁體)](README.zh-TW.md) | [Русский](README.ru.md)
 
@@ -18,26 +18,26 @@ A cross-platform desktop app to browse and search your Claude Code, Cursor IDE, 
 </tr>
 <tr>
 <td align="center">
-<a href="https://github.com/ndokutovich/claude-code-history-viewer/releases/latest/download/AI.Code.History.Viewer_1.10.11_x64-setup.exe">
+<a href="https://github.com/ndokutovich/ai-code-history-viewer/releases/latest/download/AI.Code.History.Viewer_1.10.11_x64-setup.exe">
 <img src="https://img.shields.io/badge/Download-.exe-blue?style=for-the-badge&logo=windows&logoColor=white" alt="Windows Download"/>
 </a>
 </td>
 <td align="center">
-<a href="https://github.com/ndokutovich/claude-code-history-viewer/releases/latest/download/AI.Code.History.Viewer_1.10.11_universal.dmg">
+<a href="https://github.com/ndokutovich/ai-code-history-viewer/releases/latest/download/AI.Code.History.Viewer_1.10.11_universal.dmg">
 <img src="https://img.shields.io/badge/Download-.dmg-black?style=for-the-badge&logo=apple&logoColor=white" alt="macOS Download"/>
 </a>
 </td>
 <td align="center">
-<a href="https://github.com/ndokutovich/claude-code-history-viewer/releases/latest/download/AI.Code.History.Viewer_1.10.11_amd64.AppImage">
+<a href="https://github.com/ndokutovich/ai-code-history-viewer/releases/latest/download/AI.Code.History.Viewer_1.10.11_amd64.AppImage">
 <img src="https://img.shields.io/badge/Download-.AppImage-orange?style=for-the-badge&logo=linux&logoColor=white" alt="Linux Download"/>
 </a>
 </td>
 </tr>
 </table>
 
-<sub>[All releases](https://github.com/ndokutovich/claude-code-history-viewer/releases)</sub>
+<sub>[All releases](https://github.com/ndokutovich/ai-code-history-viewer/releases)</sub>
 
-> ⚠️ **Beta software** - Things might break or change. Report issues on [GitHub](https://github.com/ndokutovich/claude-code-history-viewer/issues).
+> ⚠️ **Beta software** - Things might break or change. Report issues on [GitHub](https://github.com/ndokutovich/ai-code-history-viewer/issues).
 
 ## Why this exists
 
@@ -407,7 +407,7 @@ The app handles large conversation histories efficiently with virtual scrolling 
 
 ### Download Pre-built Binaries
 
-Get the latest version from [Releases](https://github.com/ndokutovich/claude-code-history-viewer/releases).
+Get the latest version from [Releases](https://github.com/ndokutovich/ai-code-history-viewer/releases).
 
 **macOS**:
 - Download the `.dmg` file
@@ -429,7 +429,7 @@ Get the latest version from [Releases](https://github.com/ndokutovich/claude-cod
 
 **All platforms**:
 ```bash
-git clone https://github.com/ndokutovich/claude-code-history-viewer.git
+git clone https://github.com/ndokutovich/ai-code-history-viewer.git
 cd claude-code-history-viewer
 pnpm install  # or npm install, yarn, bun
 pnpm tauri:build  # builds for your current platform
@@ -587,14 +587,14 @@ The app expects this structure:
 - **Linux**: Install WebKitGTK if you see webkit-related errors: `sudo apt install libwebkit2gtk-4.1-dev`
 - **macOS**: If you get a security warning, right-click the app and choose "Open"
 
-**Update problems**: If auto-update fails, download the latest version manually from [Releases](https://github.com/ndokutovich/claude-code-history-viewer/releases).
+**Update problems**: If auto-update fails, download the latest version manually from [Releases](https://github.com/ndokutovich/ai-code-history-viewer/releases).
 
 ## Contributing
 
 Contributions are welcome! Here's how you can help:
 
 **Bug Reports**:
-- Open an issue on [GitHub](https://github.com/ndokutovich/claude-code-history-viewer/issues)
+- Open an issue on [GitHub](https://github.com/ndokutovich/ai-code-history-viewer/issues)
 - Include your OS, app version, and steps to reproduce
 - Screenshots or error messages are helpful
 
@@ -612,7 +612,7 @@ Contributions are welcome! Here's how you can help:
 
 **Development Setup**:
 ```bash
-git clone https://github.com/ndokutovich/claude-code-history-viewer.git
+git clone https://github.com/ndokutovich/ai-code-history-viewer.git
 cd claude-code-history-viewer
 pnpm install
 pnpm tauri:dev  # starts dev server with hot reload
@@ -662,4 +662,4 @@ MIT License - see [LICENSE](LICENSE) file.
 
 ---
 
-**Questions or issues?** [Open an issue](https://github.com/ndokutovich/claude-code-history-viewer/issues) with details about your setup and what went wrong.
+**Questions or issues?** [Open an issue](https://github.com/ndokutovich/ai-code-history-viewer/issues) with details about your setup and what went wrong.

@@ -78,7 +78,7 @@ Release artifacts will be in: `src-tauri/target/release/bundle/`
 
 ### 5. Create GitHub Release
 
-1. Go to: https://github.com/ndokutovich/claude-code-history-viewer/releases
+1. Go to: https://github.com/ndokutovich/ai-code-history-viewer/releases
 2. Click "Draft a new release"
 3. Select the tag you just pushed (e.g., `v1.0.6`)
 4. Fill in the release notes
@@ -154,7 +154,7 @@ Make sure your SSH key is set up correctly:
 ssh -T git@github.com
 
 # If needed, switch to HTTPS
-git remote set-url origin https://github.com/ndokutovich/claude-code-history-viewer.git
+git remote set-url origin https://github.com/ndokutovich/ai-code-history-viewer.git
 ```
 
 ## Related Scripts
