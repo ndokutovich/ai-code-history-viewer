@@ -315,3 +315,44 @@ account export · `87231b20` Flatpak (build target, not papered).
   ported from #4bc63da2. Ours stays: it is our layout choice, not a mirror.
 - The new tail is 136 commits; the previous boundary (`v1.13.0..v1.32.2`, 433)
   remains fully dispositioned above.
+
+### Outcome — what the sweep actually did (2026-11-20)
+
+**Ported**
+
+| Upstream | Our commit | What changed |
+|---|---|---|
+| `49ecfb6c` #765 | `20193538` | transcript walk uses a worklist; 100k-deep chain no longer overflows (the old test depth of 10k fit the stack, so it proved nothing) |
+| `13903a00` #768 | `884ecc65` | `api-request*` records never count as messages or render, even with the noise toggle on |
+| `ca9b27a8` #767 | `2410aa42` | every session selection takes a token; a stale load cannot paint over the newer session |
+| `6058c6c2` #720 | `f072bf3a` | image detection only on whole values; prose mentioning `logo.png` stays text |
+| `17758d75` #729 | `01618914` | undated records inherit the nearest dated line, past the page window |
+| `424ad45a` #804 | `df1c5196` | setup starts the file watcher nothing ever started |
+| `c74795be` #791 | `dac81ef3` | copy-feedback timers owned by a hook and cleared on unmount |
+| `605f4eb5`/`84e068f9` #699/#710 | `1f3ef5f3` | history files are opened without following a link or reading a pipe |
+
+**Not applicable — checked in our code, not assumed**
+
+- `ccf779ec` #763 — our refresh replaces the first page instead of merging a
+  latest window, so the "appended tail disappears" class cannot occur here.
+- `c46f8999` #672, `9fa7315e` #724 — our search results carry no
+  `projectPaths` contract; both commits presuppose upstream's search module.
+- `d7b7ff3a` #682 — the live edit collector rebuilds whole files from
+  `originalFile`; the patch/fragment rows it guards exist only in dead code
+  (`build_tool_use_edits` is unreachable).
+- `827f34d5` #781 — our `delete_session` validates absolute path and `.jsonl`
+  before any store lookup.
+- `823b72f1` #709 — our navigator is role-based and has no kind taxonomy to
+  extend with "answer".
+- `f876bfeb` #766, `756040da` #776, `1e42be02` #790 — each needs a store format
+  we do not have a fixture for (Antigravity IDE 2.6, OpenCode 2.x
+  `session_v2`; the local `opencode.db` is 1.x with `session_message` empty).
+  Upstream code is available to port the day such a store appears.
+- `85a77d62` #795 — token stats cover Claude/Codex/Gemini only; there are no
+  OpenCode or Kilo rows to roll up.
+
+**Deferred product decisions** — features rather than fixes: conversation
+branches (`71fc2ad1` #782, pairs with #568), inline per-message tokens
+(`55489c10` #787), "prompts & final replies" filter (`74381842` #769),
+multiple windows (`2edfb8fc` #803), Flatpak (`87231b20` #794), and the
+provider wave (Hermes, Qoder, claude.ai export, Cursor ACP).
