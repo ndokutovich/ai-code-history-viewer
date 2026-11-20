@@ -394,6 +394,13 @@ interface AppStore extends AppState,
 
 const DEFAULT_PAGE_SIZE = 100; // Load 100 messages on initial loading
 
+/**
+ * Bumped by every session selection. A load that finishes after a newer
+ * selection took over drops its result instead of overwriting the new
+ * session's messages (upstream #767).
+ */
+let sessionLoadToken = 0;
+
 export const useAppStore = create<AppStore>((set, get) => ({
   // ---- Slice initial states ----
   // Each slice defines its own initial values; we spread them here so the
@@ -789,6 +796,8 @@ export const useAppStore = create<AppStore>((set, get) => ({
       get().selectProject(matchingProject);
     }
 
+    const loadToken = ++sessionLoadToken;
+
     // Note: currentView is intentionally NOT set here to preserve user's view preference
     set({
       selectedSession: session,
@@ -856,6 +865,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
         throw new Error(result.error?.message || 'Failed to load messages');
       }
 
+      if (loadToken !== sessionLoadToken) {
+        return;
+      }
+
       // Convert to UI display format
       const uiMessages = result.data.map(universalToUIMessage);
 
@@ -872,6 +885,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
         isLoadingMessages: false,
       });
     } catch (error) {
+      if (loadToken !== sessionLoadToken) {
+        return;
+      }
       console.error("Failed to load session messages:", error);
       set({
         error: { type: AppErrorType.UNKNOWN, message: String(error) },
@@ -906,6 +922,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   loadMoreMessages: async () => {
     const { selectedProject, selectedSession, pagination, messages } = get();
+    const loadToken = sessionLoadToken;
 
     if (
       !selectedProject ||
@@ -960,6 +977,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
         throw new Error(result.error?.message || 'Failed to load more messages');
       }
 
+      if (loadToken !== sessionLoadToken) {
+        return;
+      }
+
       // Convert to UI display format
       const uiMessages = result.data.map(universalToUIMessage);
 
@@ -973,6 +994,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
         },
       });
     } catch (error) {
+      if (loadToken !== sessionLoadToken) {
+        return;
+      }
       console.error("Failed to load more messages:", error);
       set({
         error: { type: AppErrorType.UNKNOWN, message: String(error) },
@@ -986,6 +1010,7 @@ export const useAppStore = create<AppStore>((set, get) => ({
 
   loadAllMessages: async () => {
     const { selectedSession, pagination, messages } = get();
+    const loadToken = sessionLoadToken;
 
     if (!selectedSession || pagination.isLoadingMore) {
       return;
@@ -1035,6 +1060,10 @@ export const useAppStore = create<AppStore>((set, get) => ({
         throw new Error(result.error?.message || 'Failed to load all messages');
       }
 
+      if (loadToken !== sessionLoadToken) {
+        return;
+      }
+
       const uiMessages = result.data.map(universalToUIMessage);
       const allMessages = [...uiMessages, ...messages];
 
@@ -1051,6 +1080,9 @@ export const useAppStore = create<AppStore>((set, get) => ({
         },
       });
     } catch (error) {
+      if (loadToken !== sessionLoadToken) {
+        return;
+      }
       console.error("Failed to load all messages:", error);
       set({
         error: { type: AppErrorType.UNKNOWN, message: String(error) },
