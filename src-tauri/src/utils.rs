@@ -608,7 +608,27 @@ fn decode_recursive_inner(encoded: &str, base_path: &std::path::Path, depth: usi
 /// a symlink or a FIFO before it is read; opening it by path would follow the
 /// link or block forever (upstream #699/#710).
 pub fn open_history_file(path: &std::path::Path) -> std::io::Result<std::fs::File> {
-    let metadata = std::fs::symlink_metadata(path)?;
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true);
+
+    // Refuse the link at open time, not with a separate check: a path can be
+    // swapped between the check and the open.
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW);
+    }
+    #[cfg(windows)]
+    {
+        use std::os::windows::fs::OpenOptionsExt;
+        // FILE_FLAG_OPEN_REPARSE_POINT: open the link itself, never its target.
+        options.custom_flags(0x0020_0000);
+    }
+
+    let file = options.open(path)?;
+
+    // Verify the opened handle, so a FIFO or a directory cannot slip through.
+    let metadata = file.metadata()?;
     let file_type = metadata.file_type();
     if file_type.is_symlink() || !file_type.is_file() {
         return Err(std::io::Error::new(
@@ -616,7 +636,8 @@ pub fn open_history_file(path: &std::path::Path) -> std::io::Result<std::fs::Fil
             "history file is not a regular file",
         ));
     }
-    std::fs::File::open(path)
+
+    Ok(file)
 }
 
 /// Same guard as [`open_history_file`], for readers that want the text.
