@@ -92,6 +92,26 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_clipboard_manager::init())
         .plugin(tauri_plugin_os::init())
+        .setup(|app| {
+            // One shared watcher for the desktop app. The command existed but
+            // nobody started it, so a session file changed on disk never
+            // refreshed the open session or the list (upstream #804).
+            let handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                match crate::commands::project::get_claude_folder_path().await {
+                    Ok(path) => {
+                        if let Err(error) =
+                            crate::commands::watcher::start_file_watcher(handle, path).await
+                        {
+                            log::warn!("File watcher not started: {error}");
+                        }
+                    }
+                    // First launch has no Claude folder yet; the UI reports it.
+                    Err(error) => log::warn!("File watcher skipped: {error}"),
+                }
+            });
+            Ok(())
+        })
         .invoke_handler(tauri::generate_handler![
             // CLI session launch (--session <uuid>)
             get_startup_session_hint,
