@@ -65,6 +65,16 @@ fn build_system_metadata(entry: &RawLogEntry) -> Option<serde_json::Value> {
     }
 }
 
+/// Records Claude Code 2.1.302+ appends to every transcript, subagent files
+/// included. They are never conversation, whatever the noise toggle says:
+/// `api-request-blob` repeats a message that is already there (upstream #735).
+fn is_api_request_record(message_type: &str) -> bool {
+    matches!(
+        message_type,
+        "api-request" | "api-request-blob" | "api-request-shape"
+    )
+}
+
 /// Check if a message type is non-conversation noise (progress, snapshots, queue ops).
 /// These are internal operational messages that should not be displayed as conversation content.
 fn is_noise_message_type(message_type: &str) -> bool {
@@ -221,6 +231,10 @@ fn process_session_file(
                     ai_title = Some(t.to_string());
                 }
             }
+            continue;
+        }
+
+        if is_api_request_record(&scan_entry.message_type) {
             continue;
         }
 
@@ -614,6 +628,8 @@ pub async fn load_session_messages(session_path: String, include_noise: Option<b
                         };
                         messages.push(summary_message);
                     }
+                } else if is_api_request_record(&log_entry.message_type) {
+                    continue;
                 } else if !include_noise.unwrap_or(false) && is_noise_message_type(&log_entry.message_type) {
                     // Skip progress, file-history-snapshot, queue-operation (unless include_noise)
                     continue;
@@ -820,6 +836,9 @@ fn load_session_messages_blocking(
             match serde_json::from_str::<PaginationScanEntry>(line) {
                 Ok(entry) => {
                     if entry.message_type == "summary" {
+                        continue;
+                    }
+                    if is_api_request_record(&entry.message_type) {
                         continue;
                     }
                     if !noise && is_noise_message_type(&entry.message_type) {
@@ -1032,6 +1051,19 @@ pub async fn get_session_message_count(
     let content = fs::read_to_string(&session_path)
         .map_err(|e| format!("SESSION_READ_ERROR: Failed to read session file: {}", e))?;
 
+    Ok(count_conversation_messages(
+        &content,
+        exclude_sidechain.unwrap_or(false),
+        include_noise.unwrap_or(false),
+    ))
+}
+
+/// Number of lines the viewer would show for a transcript.
+fn count_conversation_messages(
+    content: &str,
+    exclude_sidechain: bool,
+    include_noise: bool,
+) -> usize {
     let mut count = 0;
 
     for line in content.lines() {
@@ -1040,18 +1072,22 @@ pub async fn get_session_message_count(
         }
 
         if let Ok(log_entry) = serde_json::from_str::<RawLogEntry>(line) {
-            if log_entry.message_type != "summary"
-                && (include_noise.unwrap_or(false) || !is_noise_message_type(&log_entry.message_type))
+            if log_entry.message_type == "summary"
+                || is_api_request_record(&log_entry.message_type)
             {
-                if exclude_sidechain.unwrap_or(false) && log_entry.is_sidechain.unwrap_or(false) {
-                    continue;
-                }
-                count += 1;
+                continue;
             }
+            if !include_noise && is_noise_message_type(&log_entry.message_type) {
+                continue;
+            }
+            if exclude_sidechain && log_entry.is_sidechain.unwrap_or(false) {
+                continue;
+            }
+            count += 1;
         }
     }
 
-    Ok(count)
+    count
 }
 
 /// Parse search query to extract quoted phrases and individual words
@@ -1449,6 +1485,22 @@ pub async fn fix_session(session_file_path: String) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn api_request_records_are_never_counted_as_messages() {
+        let content = [
+            r#"{"type":"user","sessionId":"s","timestamp":"2026-01-01T00:00:00Z","message":{"role":"user","content":"hi"}}"#,
+            r#"{"type":"api-request","sessionId":"s","timestamp":"2026-01-01T00:00:01Z"}"#,
+            r#"{"type":"api-request-blob","sessionId":"s","timestamp":"2026-01-01T00:00:02Z"}"#,
+            r#"{"type":"api-request-shape","sessionId":"s","timestamp":"2026-01-01T00:00:03Z"}"#,
+            r#"{"type":"assistant","sessionId":"s","timestamp":"2026-01-01T00:00:04Z","message":{"role":"assistant","content":[]}}"#,
+        ]
+        .join("\n");
+
+        // Neither the default count nor the noise-enabled one may include them.
+        assert_eq!(count_conversation_messages(&content, false, false), 2);
+        assert_eq!(count_conversation_messages(&content, false, true), 2);
+    }
 
     #[test]
     #[cfg(target_os = "windows")]
