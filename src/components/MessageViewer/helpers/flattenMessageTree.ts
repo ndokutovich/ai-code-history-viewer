@@ -179,29 +179,36 @@ export function flattenMessageTree({
   const orderedMessages: UIMessage[] = [];
   const visited = new Set<string>();
 
-  function traverse(message: UIMessage, skipDueToHiddenParent = false): void {
-    if (visited.has(message.uuid)) {
-      if (import.meta.env.DEV) {
-        console.warn(`Circular reference detected for message: ${message.uuid}`);
+  function traverse(root: UIMessage): void {
+    // Keep conversation depth off the call stack: a long session is a chain,
+    // and recursion overflowed the stack on transcript-size inputs (#765).
+    // Reverse-push sorted siblings so the LIFO worklist preserves pre-order.
+    const pending: Array<{ message: UIMessage; isHiddenByParent: boolean }> = [
+      { message: root, isHiddenByParent: false },
+    ];
+
+    while (pending.length > 0) {
+      const { message, isHiddenByParent } = pending.pop()!;
+
+      if (visited.has(message.uuid)) {
+        if (import.meta.env.DEV) {
+          console.warn(`Circular reference detected for message: ${message.uuid}`);
+        }
+        continue;
       }
-      return;
-    }
 
-    visited.add(message.uuid);
+      visited.add(message.uuid);
 
-    // Track if this message should be skipped due to hidden parent
-    const isHiddenByParent = skipDueToHiddenParent;
+      if (!isHiddenByParent) {
+        orderedMessages.push(message);
+      }
 
-    // Add message to ordered list (we'll filter later)
-    if (!isHiddenByParent) {
-      orderedMessages.push(message);
-    }
-
-    // Traverse children (skip children if this message is hidden)
-    const isHidden = hiddenSet.has(message.uuid) || isHiddenByParent;
-    const children = childrenMap.get(message.uuid) ?? [];
-    for (const child of children) {
-      traverse(child, isHidden);
+      // Hidden descendants still count as visited for partial-window recovery.
+      const isHidden = hiddenSet.has(message.uuid) || isHiddenByParent;
+      const children = childrenMap.get(message.uuid) ?? [];
+      for (let index = children.length - 1; index >= 0; index -= 1) {
+        pending.push({ message: children[index]!, isHiddenByParent: isHidden });
+      }
     }
   }
 
