@@ -134,30 +134,10 @@ export const MessageContentDisplay: React.FC<MessageContentDisplayProps> = React
       return <CommandRenderer text={content} />;
     }
 
+    // Only a whole-value image renders as an image. Text that merely mentions
+    // a URL or filename keeps its words, code and search text (upstream #720).
     if (isImageUrl(content) || isBase64Image(content)) {
-      return <ImageRenderer imageUrl={content} />;
-    }
-
-    const imageMatch = content.match(
-      /(data:image\/[^;\s]+;base64,[A-Za-z0-9+/=]+|https?:\/\/[^\s]+\.(jpg|jpeg|png|gif|svg|webp))/i
-    );
-    if (imageMatch && imageMatch[1]) {
-      const imageUrl = imageMatch[1];
-      const textWithoutImage = content.replace(imageMatch[0], "").trim();
-
-      return (
-        <>
-          <ImageRenderer imageUrl={imageUrl} />
-          {textWithoutImage && textWithoutImage.length > 0 && (
-            <div className="mt-2">
-              <MessageContentDisplay
-                content={textWithoutImage}
-                messageType={messageType}
-              />
-            </div>
-          )}
-        </>
-      );
+      return <ImageRenderer imageUrl={content.trim()} />;
     }
   }
 
