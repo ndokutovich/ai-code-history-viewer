@@ -99,7 +99,7 @@ struct BoundaryClassifier {
 /// absence marks "history starts abruptly here; the messages before it live
 /// in a different file."
 fn find_dangling_parent_uuid(path: &Path) -> Option<String> {
-    let file = fs::File::open(path).ok()?;
+    let file = crate::utils::open_history_file(path).ok()?;
     let reader = BufReader::new(file);
 
     let mut own_uuids: HashSet<String> = HashSet::new();
@@ -179,7 +179,7 @@ fn find_file_containing_uuid(
 /// UUID referenced by a continuation boundary. True means the newer file is
 /// a branch from the predecessor, not a replacement for it.
 fn has_main_conversation_after_uuid(path: &Path, target_uuid: &str) -> bool {
-    let Ok(file) = fs::File::open(path) else {
+    let Ok(file) = crate::utils::open_history_file(path) else {
         return false;
     };
     let reader = BufReader::new(file);

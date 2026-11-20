@@ -601,3 +601,30 @@ fn decode_recursive_inner(encoded: &str, base_path: &std::path::Path, depth: usi
     }
     None
 }
+
+/// Opens a history file without following a link or waiting on a pipe.
+///
+/// A path that was a regular `.jsonl` when the listing ran can be swapped for
+/// a symlink or a FIFO before it is read; opening it by path would follow the
+/// link or block forever (upstream #699/#710).
+pub fn open_history_file(path: &std::path::Path) -> std::io::Result<std::fs::File> {
+    let metadata = std::fs::symlink_metadata(path)?;
+    let file_type = metadata.file_type();
+    if file_type.is_symlink() || !file_type.is_file() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::InvalidInput,
+            "history file is not a regular file",
+        ));
+    }
+    std::fs::File::open(path)
+}
+
+/// Same guard as [`open_history_file`], for readers that want the text.
+pub fn read_history_file(path: &std::path::Path) -> std::io::Result<String> {
+    use std::io::Read;
+
+    let mut file = open_history_file(path)?;
+    let mut content = String::new();
+    file.read_to_string(&mut content)?;
+    Ok(content)
+}

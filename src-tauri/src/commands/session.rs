@@ -618,7 +618,7 @@ pub async fn load_project_sessions(
 #[tauri::command]
 pub async fn load_session_messages(session_path: String, include_noise: Option<bool>) -> Result<Vec<UniversalMessage>, String> {
     // Use memory-mapped I/O for zero-copy file access (faster than read_to_string for large files)
-    let file = fs::File::open(&session_path)
+    let file = crate::utils::open_history_file(std::path::Path::new(&session_path))
         .map_err(|e| format!("SESSION_READ_ERROR: Failed to open session file: {}", e))?;
 
     let metadata = file
@@ -856,7 +856,7 @@ fn load_session_messages_blocking(
     let mut valid_line_indices: Vec<(usize, usize)> = Vec::new();
 
     for (file_no, chain_path) in chain.iter().enumerate() {
-        let file = match fs::File::open(chain_path) {
+        let file = match crate::utils::open_history_file(chain_path) {
             Ok(f) => f,
             Err(e) => {
                 if file_no == 0 && chain.len() == 1 {
@@ -1113,7 +1113,7 @@ pub async fn get_session_message_count(
     exclude_sidechain: Option<bool>,
     include_noise: Option<bool>,
 ) -> Result<usize, String> {
-    let content = fs::read_to_string(&session_path)
+    let content = crate::utils::read_history_file(std::path::Path::new(&session_path))
         .map_err(|e| format!("SESSION_READ_ERROR: Failed to read session file: {}", e))?;
 
     Ok(count_conversation_messages(
@@ -1315,7 +1315,7 @@ pub async fn search_messages(
             }
         }
 
-        if let Ok(content) = fs::read_to_string(entry.path()) {
+        if let Ok(content) = crate::utils::read_history_file(entry.path()) {
             for (line_num, line) in content.lines().enumerate() {
                 if let Ok(log_entry) = serde_json::from_str::<RawLogEntry>(line) {
                     // Filter by message type
@@ -1570,6 +1570,24 @@ mod tests {
             project_path: None,
             subtype: None,
             system_metadata: None,
+        }
+    }
+
+    #[test]
+    fn history_file_guard_refuses_non_files() {
+        let dir = tempfile::tempdir().unwrap();
+        let file = dir.path().join("s.jsonl");
+        std::fs::write(&file, "{}\n").unwrap();
+
+        assert!(crate::utils::open_history_file(&file).is_ok());
+        // A directory (and, on Unix, a symlink) is refused instead of read.
+        assert!(crate::utils::open_history_file(dir.path()).is_err());
+
+        #[cfg(unix)]
+        {
+            let link = dir.path().join("link.jsonl");
+            std::os::unix::fs::symlink(&file, &link).unwrap();
+            assert!(crate::utils::open_history_file(&link).is_err());
         }
     }
 
