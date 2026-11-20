@@ -75,6 +75,68 @@ fn is_api_request_record(message_type: &str) -> bool {
     )
 }
 
+/// Timestamp of the nearest dated line: the closest earlier one, else the
+/// closest later one. Undated bookkeeping records used to be stamped with
+/// "now", which sorted them after the whole conversation and showed the time
+/// the file was opened (upstream #729).
+fn neighbour_timestamp(
+    mmap: &[u8],
+    ranges: &[(usize, usize)],
+    line_idx: usize,
+) -> Option<String> {
+    let timestamp_at = |idx: usize| -> Option<String> {
+        let (start, end) = *ranges.get(idx)?;
+        let line = std::str::from_utf8(mmap.get(start..end)?).ok()?;
+        let entry = serde_json::from_str::<RawLogEntry>(line).ok()?;
+        entry.timestamp.filter(|ts| !ts.is_empty())
+    };
+
+    for idx in (0..line_idx).rev() {
+        if let Some(ts) = timestamp_at(idx) {
+            return Some(ts);
+        }
+    }
+    for idx in (line_idx + 1)..ranges.len() {
+        if let Some(ts) = timestamp_at(idx) {
+            return Some(ts);
+        }
+    }
+    None
+}
+
+/// Fills empty timestamps from the nearest dated message in load order:
+/// earlier first, then later. A file with no dated line keeps the old fallback.
+fn fill_missing_timestamps(messages: &mut [ClaudeMessage]) {
+    if !messages.iter().any(|message| message.timestamp.is_empty()) {
+        return;
+    }
+
+    let mut last: Option<String> = None;
+    let mut leading: Vec<usize> = Vec::new();
+
+    for index in 0..messages.len() {
+        if messages[index].timestamp.is_empty() {
+            match &last {
+                Some(ts) => messages[index].timestamp = ts.clone(),
+                None => leading.push(index),
+            }
+        } else {
+            let ts = messages[index].timestamp.clone();
+            for pending in leading.drain(..) {
+                messages[pending].timestamp = ts.clone();
+            }
+            last = Some(ts);
+        }
+    }
+
+    if !leading.is_empty() {
+        let fallback = last.unwrap_or_else(|| Utc::now().to_rfc3339());
+        for pending in leading {
+            messages[pending].timestamp = fallback.clone();
+        }
+    }
+}
+
 /// Check if a message type is non-conversation noise (progress, snapshots, queue ops).
 /// These are internal operational messages that should not be displayed as conversation content.
 fn is_noise_message_type(message_type: &str) -> bool {
@@ -672,11 +734,8 @@ pub async fn load_session_messages(session_path: String, include_noise: Option<b
                             eprintln!("Warning: Missing session_id in line {} of {}", line_num + 1, session_path);
                             "unknown-session".to_string()
                         }),
-                        timestamp: log_entry.timestamp.unwrap_or_else(|| {
-                            let now = Utc::now().to_rfc3339();
-                            eprintln!("Warning: Missing timestamp in line {} of {}, using current time: {}", line_num + 1, session_path, now);
-                            now
-                        }),
+                        // Filled from neighbouring lines once the file is read.
+                        timestamp: log_entry.timestamp.unwrap_or_default(),
                         message_type: log_entry.message_type.clone(),
                         content: log_entry.message.map(|m| m.content),
                         tool_use: log_entry.tool_use,
@@ -705,6 +764,8 @@ pub async fn load_session_messages(session_path: String, include_noise: Option<b
             }
         }
     }
+
+    fill_missing_timestamps(&mut messages);
 
     // Convert ClaudeMessages to UniversalMessages
     // Extract full project path from session path for consistency with search_messages
@@ -981,9 +1042,13 @@ fn load_session_messages_blocking(
                     session_id: log_entry
                         .session_id
                         .unwrap_or_else(|| "unknown-session".to_string()),
-                    timestamp: log_entry
-                        .timestamp
-                        .unwrap_or_else(|| Utc::now().to_rfc3339()),
+                    timestamp: match log_entry.timestamp {
+                        Some(ts) if !ts.is_empty() => ts,
+                        // Look past the page window: the nearest dated line may
+                        // sit outside it.
+                        _ => neighbour_timestamp(mmap, &ranges_per_file[file_no], line_idx)
+                            .unwrap_or_else(|| Utc::now().to_rfc3339()),
+                    },
                     message_type: log_entry.message_type.clone(),
                     content: log_entry.message.map(|m| m.content),
                     tool_use: log_entry.tool_use,
@@ -1485,6 +1550,47 @@ pub async fn fix_session(session_file_path: String) -> Result<String, String> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn message_with_timestamp(timestamp: &str) -> ClaudeMessage {
+        ClaudeMessage {
+            uuid: uuid::Uuid::new_v4().to_string(),
+            parent_uuid: None,
+            session_id: "s".to_string(),
+            timestamp: timestamp.to_string(),
+            message_type: "user".to_string(),
+            content: None,
+            tool_use: None,
+            tool_use_result: None,
+            is_sidechain: None,
+            usage: None,
+            role: None,
+            message_id: None,
+            model: None,
+            stop_reason: None,
+            project_path: None,
+            subtype: None,
+            system_metadata: None,
+        }
+    }
+
+    #[test]
+    fn undated_records_inherit_neighbouring_timestamps() {
+        let mut messages = vec![
+            message_with_timestamp(""),
+            message_with_timestamp("2026-01-01T00:00:01Z"),
+            message_with_timestamp(""),
+            message_with_timestamp("2026-01-01T00:00:02Z"),
+            message_with_timestamp(""),
+        ];
+
+        fill_missing_timestamps(&mut messages);
+
+        // Leading undated takes the first later date, middle takes the earlier,
+        // trailing takes the last known.
+        assert_eq!(messages[0].timestamp, "2026-01-01T00:00:01Z");
+        assert_eq!(messages[2].timestamp, "2026-01-01T00:00:01Z");
+        assert_eq!(messages[4].timestamp, "2026-01-01T00:00:02Z");
+    }
 
     #[test]
     fn api_request_records_are_never_counted_as_messages() {
