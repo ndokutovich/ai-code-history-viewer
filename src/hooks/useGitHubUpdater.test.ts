@@ -9,6 +9,8 @@ const { mockCheck, mockRelaunch, mockGetVersion, mockFetch } = vi.hoisted(() => 
   mockFetch: vi.fn(),
 }));
 
+const windowFetch = vi.fn();
+
 vi.mock('@tauri-apps/plugin-updater', () => ({ check: mockCheck }));
 vi.mock('@tauri-apps/plugin-process', () => ({ relaunch: mockRelaunch }));
 vi.mock('@tauri-apps/api/app', () => ({ getVersion: mockGetVersion }));
@@ -23,6 +25,10 @@ import { useGitHubUpdater } from './useGitHubUpdater';
 describe('useGitHubUpdater check timeout', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    // The webview fetch is the fallback path; by default the tests keep it
+    // offline unless a case opts in.
+    windowFetch.mockRejectedValue(new Error('offline'));
+    vi.stubGlobal('fetch', windowFetch);
     mockGetVersion.mockResolvedValue('1.10.7');
     mockFetch.mockResolvedValue({
       ok: true,
@@ -39,6 +45,7 @@ describe('useGitHubUpdater check timeout', () => {
 
   afterEach(() => {
     vi.useRealTimers();
+    vi.unstubAllGlobals();
     vi.resetAllMocks();
   });
 
@@ -128,6 +135,35 @@ describe('useGitHubUpdater check timeout', () => {
 
     expect(result.current.state.hasUpdate).toBe(true);
     expect(result.current.state.manualUpdateAvailable).toBe(true);
+  });
+
+  it('falls back to the webview fetch when the plugin client stalls', async () => {
+    vi.useFakeTimers();
+    mockFetch.mockReturnValue(new Promise(() => undefined));
+    windowFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        tag_name: 'v1.10.12',
+        name: 'v1.10.12',
+        body: '',
+        published_at: '',
+        html_url: 'https://example.test/release',
+        assets: [],
+      }),
+    });
+    mockCheck.mockResolvedValue(null);
+
+    const { result } = renderHook(() => useGitHubUpdater());
+
+    await act(async () => {
+      void result.current.checkForUpdates(true);
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(UPDATE_CHECK_TIMEOUT_MS + 1);
+    });
+
+    expect(windowFetch).toHaveBeenCalled();
+    expect(result.current.state.releaseInfo?.tag_name).toBe('v1.10.12');
   });
 
   it('compares versions numerically, so 1.10.10 beats 1.10.9', async () => {

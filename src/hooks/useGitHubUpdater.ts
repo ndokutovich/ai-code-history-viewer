@@ -40,6 +40,14 @@ export interface UseGitHubUpdaterReturn {
   dismissUpdate: () => void;
 }
 
+const GITHUB_RELEASE_URL =
+  "https://api.github.com/repos/ndokutovich/ai-code-history-viewer/releases/latest";
+
+const RELEASE_REQUEST_HEADERS = {
+  Accept: "application/vnd.github.v3+json",
+  "User-Agent": "Claude-Code-History-Viewer",
+};
+
 export function useGitHubUpdater(): UseGitHubUpdaterReturn {
   const [state, setState] = useState<UpdateState>({
     isChecking: false,
@@ -63,39 +71,46 @@ export function useGitHubUpdater(): UseGitHubUpdaterReturn {
 
   const fetchGitHubRelease =
     useCallback(async (): Promise<GitHubRelease | null> => {
-      try {
-        // Timeout control with AbortController (10 seconds)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
+      const attempt = async (
+        label: string,
+        doFetch: (url: string, init: RequestInit) => Promise<Response>
+      ): Promise<GitHubRelease | null> => {
+        const started = Date.now();
+        try {
+          const response = await withTimeout(
+            doFetch(GITHUB_RELEASE_URL, {
+              method: "GET",
+              headers: RELEASE_REQUEST_HEADERS,
+            }),
+            UPDATE_CHECK_TIMEOUT_MS,
+            `${label} timed out`
+          );
 
-        const response = await fetch(
-          "https://api.github.com/repos/ndokutovich/ai-code-history-viewer/releases/latest",
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/vnd.github.v3+json",
-              "User-Agent": "Claude-Code-History-Viewer",
-            },
-            signal: controller.signal,
+          if (!response.ok) {
+            throw new Error(`GitHub API error: ${response.status}`);
           }
-        );
 
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          throw new Error(`GitHub API error: ${response.status}`);
+          const release = (await response.json()) as GitHubRelease;
+          console.info(
+            `Release feed answered via ${label} in ${Date.now() - started}ms`
+          );
+          return release;
+        } catch (error) {
+          console.warn(
+            `Release feed via ${label} failed after ${Date.now() - started}ms:`,
+            error
+          );
+          return null;
         }
+      };
 
-        const release = (await response.json()) as GitHubRelease;
-        return release;
-      } catch (error) {
-        if (error instanceof Error && error.name === 'AbortError') {
-          console.warn("GitHub API request timeout (10 seconds)");
-        } else {
-          console.error("Failed to fetch GitHub release info:", error);
-        }
-        return null;
-      }
+      // The plugin's HTTP client runs in Rust and has been seen to stall
+      // indefinitely on this network. The webview's own fetch goes elsewhere
+      // and the GitHub API allows CORS, so it is a real second chance.
+      return (
+        (await attempt("plugin-http", fetch)) ??
+        (await attempt("window.fetch", (url, init) => globalThis.fetch(url, init)))
+      );
     }, []);
 
   const checkForUpdates = useCallback(async (forceCheck: boolean = false) => {
