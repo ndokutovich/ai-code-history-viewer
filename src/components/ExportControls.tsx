@@ -14,6 +14,7 @@ import { filterMessages } from "@/utils/messageFilters";
 import { downloadDir, join } from "@tauri-apps/api/path";
 import { createFileActions } from "@/utils/fileActions";
 import { parseResumeExtraArgs } from "@/utils/providers";
+import { useCopiedFlag } from "@/hooks/useCopiedFlag";
 
 interface ExportControlsProps {
   messages: UIMessage[];
@@ -25,7 +26,7 @@ export function ExportControls({ messages, session }: ExportControlsProps) {
   const { t: tCommon } = useTranslation("common");
   const [includeAttachments, setIncludeAttachments] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  const [copiedPath, setCopiedPath] = useState(false);
+  const [copiedPath, markCopiedPath] = useCopiedFlag(2000);
   const [isFixingSession, setIsFixingSession] = useState(false);
   const [isResuming, setIsResuming] = useState(false);
   const [supportsResume, setSupportsResume] = useState(false);
@@ -99,9 +100,8 @@ export function ExportControls({ messages, session }: ExportControlsProps) {
   const handleCopyPath = async () => {
     try {
       await writeText(session.file_path);
-      setCopiedPath(true);
+      markCopiedPath();
       toast.success(t("export.pathCopied"));
-      setTimeout(() => setCopiedPath(false), 2000);
     } catch (error) {
       console.error("Failed to copy path:", error);
       toast.error(t("export.pathCopyFailed"));

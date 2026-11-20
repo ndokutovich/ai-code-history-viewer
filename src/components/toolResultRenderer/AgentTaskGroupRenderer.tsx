@@ -19,6 +19,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { cn } from "@/utils/cn";
 import { getVariantStyles, layout } from "@/components/renderers";
+import { useCopiedFlag } from "@/hooks/useCopiedFlag";
 
 export interface AgentTask {
   agentId: string;
@@ -70,7 +71,7 @@ const AgentTaskItem = memo(function AgentTaskItem({
   onToggle: () => void;
 }) {
   const { t } = useTranslation();
-  const [copied, setCopied] = useState(false);
+  const [copied, markCopied] = useCopiedFlag(2000);
   const config = STATUS_CONFIG[task.status] || STATUS_CONFIG.async_launched;
   const StatusIcon = config.icon;
 
@@ -78,8 +79,7 @@ const AgentTaskItem = memo(function AgentTaskItem({
     e.stopPropagation();
     if (task.outputFile) {
       await navigator.clipboard.writeText(task.outputFile);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      markCopied();
     }
   };
 

@@ -27,6 +27,7 @@ import { openFolder } from "@/utils/fileActions";
 import { EnhancedDiffViewer } from "../EnhancedDiffViewer";
 import type { FileEditItemProps, RestoreStatus } from "./types";
 import { getLanguageFromPath, formatTimestamp, getRelativeTime } from "./utils";
+import { useCopiedFlag } from "@/hooks/useCopiedFlag";
 import {
   getPreStyles,
   getLineStyles,
@@ -39,7 +40,7 @@ export const FileEditItem: React.FC<FileEditItemProps> = ({ edit, isDarkMode }) 
   const { t } = useTranslation("recentEdits");
   const { t: tCommon } = useTranslation("common");
   const [isExpanded, setIsExpanded] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [copied, markCopied] = useCopiedFlag(2000);
   const [restoreStatus, setRestoreStatus] = useState<RestoreStatus>("idle");
   // Side-by-side diff against the recorded original (upstream #473).
   const [showDiff, setShowDiff] = useState(false);
@@ -53,8 +54,7 @@ export const FileEditItem: React.FC<FileEditItemProps> = ({ edit, isDarkMode }) 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(edit.content_after_change);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      markCopied();
     } catch (err) {
       console.error("Failed to copy:", err);
     }

@@ -24,6 +24,7 @@ import { Tooltip, TooltipTrigger, TooltipContent } from "../../ui/tooltip";
 import { DateDivider } from "./DateDivider";
 import { MAX_DEPTH_MARGIN } from "../../../constants/layout";
 import type { MessageNodeProps } from "../types";
+import { useCopiedFlag } from "@/hooks/useCopiedFlag";
 
 export const MessageNode = React.memo(({
   message,
@@ -39,7 +40,7 @@ export const MessageNode = React.memo(({
 }: MessageNodeProps) => {
   const { t } = useTranslation("components");
   const dateDividerTimestamp = dateDividerMap?.get(message.uuid);
-  const [copiedReference, setCopiedReference] = React.useState(false);
+  const [copiedReference, markCopiedReference] = useCopiedFlag(2000);
 
   const handleCopyReference = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -51,12 +52,11 @@ export const MessageNode = React.memo(({
 
       const { writeText } = await import("@tauri-apps/plugin-clipboard-manager");
       await writeText(reference);
-      setCopiedReference(true);
+      markCopiedReference();
 
       const { toast } = await import("sonner");
       toast.success(t("messageReference.referenceCopied"));
 
-      setTimeout(() => setCopiedReference(false), 2000);
     } catch (error) {
       console.error("Failed to copy reference:", error);
       const { toast } = await import("sonner");
