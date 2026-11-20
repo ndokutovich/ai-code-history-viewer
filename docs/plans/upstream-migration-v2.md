@@ -242,3 +242,76 @@ These are the only upstream items not integrated. Each is a product choice, not 
    Each = Rust adapter + TS adapter + registration + 6 locales + permanent maintenance.
 2. **Server mode / WebUI** — an HTTP server with auth and deep links over the same history.
    Our fork has no server surface at all.
+
+---
+
+## TAIL 2 — v1.32.2 → Omnilogue v2.0.0 (136 commits, 2026-11-19/20)
+
+Upstream renamed the repository to **jhlee0409/omnilogue** and shipped **v2.0.0**
+on the same day our fork was renamed (2026-11-19). The `upstream` remote now
+points at the new URL. Dispositions below are from commit subjects plus, where
+it mattered, the diff; nothing here is implemented yet.
+
+### Recommended ports — fixes that apply to code we own
+
+| Commit | What | Why us |
+|---|---|---|
+| `49ecfb6c` | avoid recursive stack growth in deep transcripts (#765) | crash on very long sessions |
+| `13903a00` | stop counting Claude Code `api-request` records as messages (#768) | our transcripts carry these rows; message counts inflate |
+| `ccf779ec` | follow appended messages across latest-window refreshes (#763) | messages vanish after auto-refresh |
+| `ca9b27a8` | unlock pagination after an abandoned session reload (#767) | we hit the blank/paged-dead session |
+| `6058c6c2` | preserve message text containing image filenames and URLs (#720) | text gets eaten by the image heuristic |
+| `c46f8999` | keep same-named projects apart for every provider (#672) | project identity collisions |
+| `9fa7315e` | retain project identity in stats and Claude/Codex search (#724) | stats/search attribution |
+| `424ad45a` | one shared file watcher on desktop (#804/#807) | duplicate watchers per window |
+| `17758d75` | date undated records from neighbouring lines (#729/#745) | stats timeline correctness |
+| `756040da` | read sessions from OpenCode 2.x (#776) | our store already has an `opencode-v2` DB on disk |
+| `85a77d62` | roll OpenCode/Kilo subagent runs into session stats (#795) | completes the Claude-only rollup we ported (#594) |
+| `d7b7ff3a` | restore only writes recorded whole-file versions (#682) | data loss for Codex/OpenCode |
+| `827f34d5` | validate path shape before resolving the Cursor Agent root (#781) | traversal guard |
+| `f876bfeb` | Antigravity IDE v2.6 workspace grouping (#766) | we own that adapter |
+| `1e42be02` | load Cline sessions by the listed file; answer edits/subagents (#790) | we own that adapter |
+| `823b72f1` | treat AskUserQuestion answers as user input (#709/#786) | navigator/prompt jumps miss them |
+| `71fc2ad1` | conversation branches with an inline switcher (#782/#800) | the branched-conversation gap we deferred (#568) |
+
+### Compare — we have an equivalent; port deltas only if a symptom appears
+
+`99865191` recent-edits scope · `605f4eb5` / `84e068f9` symlink-free history
+reads (we already refuse symlinks) · `fb744e8b` history read failures + Cline
+ids · `36b7d41c` navigator focus row · `63efbb44` minimap search ticks ·
+`c64bd64a` spawned-subagent rollup (ours differs) · `500a04a8` scoped search ·
+`486cbdf1` pagination/archive counts · `9c3c6604` empty-subagent parent link ·
+`2c1cbab7` prepend restore measurement · `398a10ea` headless export parity ·
+`e0a2ba3d` / `509030fc` usage-breakdown contract · `29400c8e` / `03da7e24` /
+`c3ab07a2` truthful loading and token recording · `31767b17` / `7cb3f603`
+settings location metadata · `a8fb62a6` turn outline (our navigator) ·
+`324ee2cd` lossless per-result metadata · `02f217fc` provider search parity.
+
+### Skip — upstream's shell and design system
+
+The T/F/SX/TR series is a rewrite of the shell and transcript around their
+three-pane layout: `2dcc9772` toolbar + Library/Projects sidebar (sessions
+column removed), `faf4e22f` tabs, `c8e22250` Inspector, `786eae75` Edits
+screen, `c1a0faeb` typography, `23e53153` / `2c777022` role tokens,
+`39dcebab`…`f0e8317a` ToolRow/DiffView transcript model, `fe757d9d`
+ShellLayout slots, `e3b84091` navigation transactions, `32f963b6` command
+manifest, `30efc534` native menu, `f3a81172` window restore, `2edfb8fc`
+multiple windows. Adopting any of it means adopting the rest.
+
+Also skipped: brand/theme rename (`00be8865`, `28a91c03`, `dadc03ce` — we
+renamed to our own name instead), server/web/Pages (`6b181dda`, `b6b01f41`,
+`69338870`), release and CI harness (`10c5fb29`, `0076a8c0`, `3747e738`,
+`017896ee`, `82c87123`, `6c191c15`, `325ce79e`), docs (`bc505013`).
+
+### Non-applicable — providers we do not have
+
+`6c155df6` Hermes · `6514bbe2` Qoder · `640d2978` Vibe store · `05d62a6c`
+Z Code modelId · `d520ed8f` Cursor ACP / JetBrains · `91b98080` claude.ai
+account export · `87231b20` Flatpak (build target, not papered).
+
+### Notes
+
+- Upstream's v2.0.0 **removed the sessions column** (`2dcc9772`) that we
+  ported from #4bc63da2. Ours stays: it is our layout choice, not a mirror.
+- The new tail is 136 commits; the previous boundary (`v1.13.0..v1.32.2`, 433)
+  remains fully dispositioned above.
