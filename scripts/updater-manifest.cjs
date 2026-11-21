@@ -67,26 +67,52 @@ function selectPlatformAssets(assets) {
 
   const macApp = find((n) => n.endsWith(".app.tar.gz"));
   if (macApp) {
-    out["darwin-universal"] = {
-      asset: macApp,
-      sigAsset: find((n) => n.endsWith(".app.tar.gz.sig")),
-    };
+    const sigAsset = find((n) => n === `${macApp.name}.sig`);
+    // The updater asks for its own arch first, then the universal bundle.
+    for (const key of [
+      "darwin-universal",
+      "darwin-aarch64",
+      "darwin-x86_64",
+      "darwin-aarch64-app",
+      "darwin-x86_64-app",
+    ]) {
+      out[key] = { asset: macApp, sigAsset };
+    }
   }
 
   const msi = find((n) => n.endsWith(".msi") && !n.endsWith(".sig"));
   if (msi) {
-    out["windows-x86_64"] = {
-      asset: msi,
-      sigAsset: find((n) => n === `${msi.name}.sig`),
+    const sigAsset = find((n) => n === `${msi.name}.sig`);
+    out["windows-x86_64"] = { asset: msi, sigAsset };
+    out["windows-x86_64-msi"] = { asset: msi, sigAsset };
+  }
+
+  // Most Windows installs come from the NSIS setup, and the updater looks for
+  // the key matching the running installer before the generic one. Without it
+  // an NSIS install is handed an MSI and the install step fails.
+  const nsis = find((n) => n.endsWith(".exe") && !n.endsWith(".sig"));
+  if (nsis) {
+    out["windows-x86_64-nsis"] = {
+      asset: nsis,
+      sigAsset: find((n) => n === `${nsis.name}.sig`),
     };
   }
 
   const appImage = find((n) => n.endsWith(".AppImage") && !n.endsWith(".sig"));
   if (appImage) {
-    out["linux-x86_64"] = {
-      asset: appImage,
-      sigAsset: find((n) => n === `${appImage.name}.sig`),
-    };
+    const sigAsset = find((n) => n === `${appImage.name}.sig`);
+    out["linux-x86_64"] = { asset: appImage, sigAsset };
+    out["linux-x86_64-appimage"] = { asset: appImage, sigAsset };
+  }
+
+  for (const [key, ext] of [
+    ["linux-x86_64-deb", ".deb"],
+    ["linux-x86_64-rpm", ".rpm"],
+  ]) {
+    const pkg = find((n) => n.endsWith(ext) && !n.endsWith(".sig"));
+    if (pkg) {
+      out[key] = { asset: pkg, sigAsset: find((n) => n === `${pkg.name}.sig`) };
+    }
   }
 
   return out;

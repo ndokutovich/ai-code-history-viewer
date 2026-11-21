@@ -276,14 +276,16 @@ export function useGitHubUpdater(): UseGitHubUpdaterReturn {
       // Relaunch app after installation completes
       await relaunch();
     } catch (error) {
+      // Tauri rejects with a plain string, which used to be replaced by a
+      // generic sentence — the reason an install failed was invisible.
+      const reason =
+        error instanceof Error ? error.message : String(error ?? "").trim();
+      console.error("Update install failed:", error);
       setState((prev) => ({
         ...prev,
         isDownloading: false,
         isInstalling: false,
-        error:
-          error instanceof Error
-            ? error.message
-            : "An error occurred while installing the update.",
+        error: reason || "An error occurred while installing the update.",
       }));
     }
   }, [state.updateInfo]);

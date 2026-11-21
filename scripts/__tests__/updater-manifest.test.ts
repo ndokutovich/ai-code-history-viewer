@@ -72,6 +72,21 @@ describe("updater-manifest.selectPlatformAssets", () => {
     expect(sel["windows-x86_64"].sigAsset.name).toBe("App_1.0.0_x64_en-US.msi.sig");
     expect(sel["linux-x86_64"].sigAsset.name).toBe("App_1.0.0_amd64.AppImage.sig");
   });
+
+  it("offers the NSIS setup, so an NSIS install is not handed an MSI", () => {
+    const withSetup = [
+      ...assets,
+      { name: "App_1.0.0_x64-setup.exe" },
+      { name: "App_1.0.0_x64-setup.exe.sig" },
+    ];
+    const sel = selectPlatformAssets(withSetup);
+    expect(sel["windows-x86_64-nsis"].asset.name).toBe("App_1.0.0_x64-setup.exe");
+    expect(sel["windows-x86_64-nsis"].sigAsset.name).toBe(
+      "App_1.0.0_x64-setup.exe.sig"
+    );
+    // The generic MSI entry stays for MSI installs.
+    expect(sel["windows-x86_64-msi"].asset.name).toBe("App_1.0.0_x64_en-US.msi");
+  });
 });
 
 describe("updater-manifest.buildManifest", () => {
